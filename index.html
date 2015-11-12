@@ -12,7 +12,7 @@
   var AU = 149597870.700; // km
   var bodies = [
     {
-      name: "Sel"
+      name: "Sel",
       m: MSun * 0.42,
       ax: 0, ay: 0,
       vx: 0, vy: 0,
@@ -20,11 +20,11 @@
       xo: 0, yo: 0
     },
     {
-      name: "Lintw"
+      name: "Lintw",
       m: MEarth * 0.88,
       ax: 0, ay: 0,
       vx: 0, vy: AU * 0.01,
-      x: 0, y: 0.75e8,
+      x: 0, y: AU * 0.4,
       xo: 0, yo: 0
     }
   ];
@@ -50,8 +50,18 @@
       bodies[i].ox = bodies[i].x; bodies[i].oy = bodies[i].y;
       bodies[i].x += bodies[i].vx; bodies[i].y += bodies[i].vy;
     }
-    // 軌跡を描画する
+    function u(x) { return ( x) / (0.5 * AU) * 300 + 300; }
+    function v(y) { return (-y) / (0.5 * AU) * 300 + 300; }
     
+    // 軌跡を描画する
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    for(var i = 0; i < bodies.length; i++) {
+      ctx.beginPath();
+      ctx.moveTo(u(bodies[i].ox), v(bodies[i].oy));
+      ctx.lineTo(u(bodies[i].x), v(bodies[i].y));
+      ctx.stroke();
+    }
     
     setTimeOut(main, 10);
   }
