@@ -132,6 +132,17 @@
           return;
         }
       }
+
+      // 天動説
+      for(var i = 0; i < bodies.length; i++) {
+        if (i == ID_SEL) continue;
+        bodies[i].xo -= bodies[ID_SEL].xo;
+        bodies[i].yo -= bodies[ID_SEL].yo;
+        bodies[i].x -= bodies[ID_SEL].x;
+        bodies[i].y -= bodies[ID_SEL].y;
+      }
+      bodies[ID_SEL].xo = bodies[ID_SEL].x = 0;
+      bodies[ID_SEL].yo = bodies[ID_SEL].y = 0;
     }
 
     pastDays += D;
@@ -146,10 +157,10 @@
     //ctx.save();
     //ctx.translate(300, 300);
     for(var i = 0; i < bodies.length; i++) {
-      var uo = getU(bodies[i].xo - bodies[ID_SEL].xo);
-      var vo = getV(bodies[i].yo - bodies[ID_SEL].yo);
-      var u = getU(bodies[i].x - bodies[ID_SEL].x);
-      var v = getV(bodies[i].y - bodies[ID_SEL].y);
+      var uo = getU(bodies[i].xo);
+      var vo = getV(bodies[i].yo);
+      var u = getU(bodies[i].x);
+      var v = getV(bodies[i].y);
       /*
       ctx.beginPath();
       ctx.arc(u, v, r, 0, Math.PI * 2);
