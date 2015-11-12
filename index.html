@@ -4,75 +4,191 @@
   <meta charset="utf-8">
   <!-- <link rel="stylesheet" type="text/css" href="./style.css"> -->
   <title>Lintw's Star System</title>
-	
+
   <script type="text/javascript">
-  var MSun = 1.989e30; // 太陽質量
-  var MJupiter = 1.8986e27; // 木星質量
-  var MEarth = 5.972e24; // 地球質量
-  var AU = 149597870.700; // km
+  var MSun = 1.989e30; // 太陽質量 kg
+  var MJupiter = 1.8986e27; // 木星質量 kg
+  var MEarth = 5.972e24; // 地球質量 kg
+  var AU = 149597870700; // 天文単位 m
+  var G = 6.67e-11; // 万有引力定数 m^3/(s^2・kg)
+
+var ID_SEL = 0;
+var ID_LINTW = 1;
+var ID_JUPITER = 2;
+var ID_SATURN = 3;
+
   var bodies = [
     {
       name: "Sel",
       m: MSun * 0.42,
-      ax: 0, ay: 0,
-      vx: 0, vy: 0,
-      x: 0, y: 0,
-      xo: 0, yo: 0
+      ax: 0.0, ay: 0.0,
+      vx: 0.0, vy: 0.0,
+      x: 0.0, y: 0.0,
+      xo: 0.0, yo: 0.0,
+      color: "red",
     },
     {
       name: "Lintw",
       m: MEarth * 0.88,
-      ax: 0, ay: 0,
-      vx: 0, vy: AU * 0.01,
-      x: 0, y: AU * 0.4,
-      xo: 0, yo: 0
+      ax: 0.0,
+      ay: -G * MSun * 0.42 / (AU * 0.4 * AU * 0.4),
+      vx: Math.sqrt(G * MSun * 0.42 / (AU * 0.4)), // 第一宇宙速度
+      vy: 0.0,
+      x: 0.0, y: AU * 0.4,
+      xo: 0.0, yo: 0.0,
+      color: "green",
+    },
+    {
+      name: "Jupiter",
+      m: MEarth * 210,
+      ax: 0.0,
+      ay: -G * MSun * 0.42 / (AU * 0.3 * AU * 0.3),
+      vx: -Math.sqrt(G * MSun * 0.42 / (AU * 0.3)), // 第一宇宙速度
+      vy: 0.0,
+      x: 0.0, y: -AU * 0.3,
+      xo: 0.0, yo: 0.0,
+      color: "black",
+    },
+    {
+      name: "Saturn",
+      m: MEarth * 130,
+      ax: 0.0,
+      ay: -G * MSun * 0.42 / (AU * 0.5 * AU * 0.5),
+      vx: -Math.sqrt(G * MSun * 0.42 / (AU * 0.5)), // 第一宇宙速度
+      vy: 0.0,
+      x: 0.0, y: -AU * 0.5,
+      xo: 0.0, yo: 0.0,
+      color: "black",
     }
   ];
-  
-  setTimeOut(main, 10);
-  
+
+/*
+var bodies = [
+  {
+    name: "Sun",
+    m: MSun,
+    ax: 0.0, ay: 0.0,
+    vx: 0.0, vy: 0.0,
+    x: 0.0, y: 0.0,
+    xo: 0.0, yo: 0.0,
+    color: "red"
+  },
+  {
+    name: "Earth",
+    m: MEarth,
+    ax: 0.0,
+    ay: -G * MSun / (AU * AU),
+    vx: 3.0e4,
+    vy: 0.0,
+    x: 0.0, y: AU,
+    xo: 0.0, yo: 0.0,
+    color: "black"
+  }
+];
+*/
+
+console.log(bodies);
+
+  setTimeout(main, 10);
+
+  var pastDays = 0;
+
   function main() {
-    // 加速度を計算する
-    for(var i = 0; i < bodies.length; i++) {
-      bodies[i].ax = 0; bodies[i].ay = 0;
-      for(var j = 0; j < bodies.length; j++) {
-        if (i == j) continue;
-        bodies[i].ax += 0;
-        bodies[i].ay += 0;
-      }
-    }
-    // 加速度を速度に加算する
-    for(var i = 0; i < bodies.length; i++) {
-      bodies[i].vx += bodies[i].ax; bodies[i].vy += bodies[i].ay;
-    }
+
+    var D = 2;
+    var tick = 60 * 60 * 24; // 1日を秒で
+
     // 速度を座標に加算する
     for(var i = 0; i < bodies.length; i++) {
-      bodies[i].ox = bodies[i].x; bodies[i].oy = bodies[i].y;
-      bodies[i].x += bodies[i].vx; bodies[i].y += bodies[i].vy;
+      bodies[i].xo = bodies[i].x;
+      bodies[i].yo = bodies[i].y;
     }
-    function u(x) { return ( x) / (0.5 * AU) * 300 + 300; }
-    function v(y) { return (-y) / (0.5 * AU) * 300 + 300; }
-    
+    for(var t = 0; t < D; t++) {
+
+      // 加速度を計算する
+      for(var i = 0; i < bodies.length; i++) {
+        bodies[i].ax = 0;
+        bodies[i].ay = 0;
+        for(var j = 0; j < bodies.length; j++) {
+          if (i == j) continue;
+          var x1 = bodies[i].x; var x2 = bodies[j].x;
+          var y1 = bodies[i].y; var y2 = bodies[j].y;
+          var dx = x2 - x1;
+          var dy = y2 - y1;
+          var rr = dx * dx + dy * dy;
+          var theta = Math.atan2(dy, dx);
+          bodies[i].ax += Math.cos(theta) * bodies[j].m * G / rr;
+          bodies[i].ay += Math.sin(theta) * bodies[j].m * G / rr;
+        }
+      }
+      // 加速度を速度に加算する
+      for(var i = 0; i < bodies.length; i++) {
+        bodies[i].vx += tick * bodies[i].ax;
+        bodies[i].vy += tick * bodies[i].ay;
+      }
+      // 速度を座標に加算する
+      for(var i = 0; i < bodies.length; i++) {
+        bodies[i].x += tick * bodies[i].vx;
+        bodies[i].y += tick * bodies[i].vy;
+      }
+    }
+
+    pastDays += D;
+    document.getElementById('eYear').innerHTML = Math.floor(pastDays / 365.25) + "";
+
+    function getU(x) { return 600.0 * ( x) / (2 * AU) + 300; }
+    function getV(y) { return 600.0 * (-y) / (2 * AU) + 300; }
+
     // 軌跡を描画する
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
+    //ctx.save();
+    //ctx.translate(300, 300);
     for(var i = 0; i < bodies.length; i++) {
+      var uo = getU(bodies[i].xo - bodies[ID_SEL].xo);
+      var vo = getV(bodies[i].yo - bodies[ID_SEL].yo);
+      var u = getU(bodies[i].x - bodies[ID_SEL].x);
+      var v = getV(bodies[i].y - bodies[ID_SEL].y);
+      /*
       ctx.beginPath();
-      ctx.moveTo(u(bodies[i].ox), v(bodies[i].oy));
-      ctx.lineTo(u(bodies[i].x), v(bodies[i].y));
+      ctx.arc(u, v, r, 0, Math.PI * 2);
+      ctx.fillStyle = bodies[i].color;
+      ctx.strokeStyle = "white";
+      ctx.fill();
       ctx.stroke();
+      */
+      ctx.beginPath();
+      ctx.moveTo(uo, vo);
+      ctx.lineTo(u, v);
+      ctx.strokeStyle = bodies[i].color;
+      ctx.stroke();
+      var svgBody = document.getElementById("b" + i);
+      svgBody.setAttribute("cx", u);
+      svgBody.setAttribute("cy", v);
     }
-    
-    setTimeOut(main, 10);
+    //ctx.restore();
+
+    setTimeout(main, 5);
   }
   </script>
-	
+
 </head>
 <body>
 
-  <div style="width:300px; height:300px;">
-    <canvas id="canvas" width="300px" height="300px"></canvas>
+  <div style="width:600px; height:600px; border:1px solid #333;">
+    <canvas id="canvas" width="600px" height="600px" style="position:absolute;">
+    </canvas>
+    <svg id="svg" width="600px" height="600px" style="position:absolute;"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+      <circle id="b0" cx="0" cy="0" r="20" fill="red"/>
+      <circle id="b1" cx="0" cy="0" r="5" fill="green"/>
+      <circle id="b2" cx="0" cy="0" r="8" fill="black"/>
+      <circle id="b3" cx="0" cy="0" r="7" fill="black"/>
+    </svg>
   </div>
+
+  <div><span id="eYear"></span> 地球年</div>
 
 </body>
 </html>
