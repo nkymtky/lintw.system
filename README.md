@@ -1,2 +1,4 @@
 # lintw.system
 Lintw's Star System
+
+http://nkymtky.github.io/lintw.lang/
