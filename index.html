@@ -6,25 +6,21 @@
   <title>Lintw's Star System</title>
 
   <script type="text/javascript">
+
   var MSun = 1.989e30; // 太陽質量 kg
   var MJupiter = 1.8986e27; // 木星質量 kg
   var MEarth = 5.972e24; // 地球質量 kg
   var AU = 149597870700; // 天文単位 m
   var G = 6.67e-11; // 万有引力定数 m^3/(s^2・kg)
 
-var ID_SEL = 0;
-var ID_LINTW = 1;
-var ID_JUPITER = 2;
-var ID_SATURN = 3;
+  var ID_SEL = 0;
+  var ID_LINTW = 1;
+  var ID_JUPITER = 2;
+  var ID_SATURN = 3;
 
   var bodies = [
     {
       name: "Sel",
-      m: MSun * 0.33,
-      ax: 0.0, ay: 0.0,
-      vx: 0.0, vy: 0.0,
-      x: 0.0, y: 0.0,
-      xo: 0.0, yo: 0.0,
       color: "red",
     },
     {
@@ -44,7 +40,13 @@ var ID_SATURN = 3;
     }
   ];
 
+  var take = 0;
   var pastDays = 0;
+
+  window.onload = function() {
+    initRoutine();
+    setTimeout(main, 10);
+  };
 
   function init(body, r, rad) {
     body.ax = -Math.cos(rad) * G * bodies[ID_SEL].m / (r * r);
@@ -54,16 +56,30 @@ var ID_SATURN = 3;
     body.ox = body.x = Math.cos(rad) * r;
     body.oy = body.y = Math.sin(rad) * r;
   }
+  function initRoutine() {
+    pastDays = 0;
 
-  init(bodies[ID_JUPITER], 0.0693 * AU, 0.0 * Math.PI);
-  init(bodies[ID_LINTW]  , 0.1100 * AU, 2.0 * Math.PI);
-  init(bodies[ID_SATURN] , 0.1746 * AU, 2.0 * Math.PI);
-
-  setTimeout(main, 10);
+    bodies[ID_SEL] = {
+      name: "Sel",
+      m: MSun * 0.33,
+      ax: 0.0, ay: 0.0,
+      vx: 0.0, vy: 0.0,
+      x: 0.0, y: 0.0,
+      xo: 0.0, yo: 0.0,
+      color: "red",
+    };
+    init(bodies[ID_JUPITER], (0.0600 + Math.random() * 0.03) * AU, (Math.random() * 2) * Math.PI);
+    init(bodies[ID_LINTW]  , (0.1100 + Math.random() * 0.03) * AU, (Math.random() * 2) * Math.PI);
+    init(bodies[ID_SATURN] , (0.1600 + Math.random() * 0.03) * AU, (Math.random() * 2) * Math.PI);
+    take++;
+    console.log("*** Take " + take);
+    console.log(bodies);
+    document.getElementById("take").innerHTML = "Take " + take;
+  }
 
   function main() {
 
-    var D = 1;
+    var D = 10;
     var tick = 60 * 60 * 12; // 1日を秒で
 
     // 速度を座標に加算する
@@ -98,6 +114,17 @@ var ID_SATURN = 3;
       for(var i = 0; i < bodies.length; i++) {
         bodies[i].x += tick * bodies[i].vx;
         bodies[i].y += tick * bodies[i].vy;
+
+        if (Math.abs(bodies[i].x) > 2.0 * AU ||
+            Math.abs(bodies[i].y) > 2.0 * AU) {
+          var canvas = document.getElementById('canvas');
+          var ctx = canvas.getContext('2d');
+          ctx.clearRect(0,0,600,600);
+          console.log("pastDays:" + pastDays);
+          initRoutine();
+          setTimeout(main, 50);
+          return;
+        }
       }
     }
 
@@ -138,6 +165,7 @@ var ID_SATURN = 3;
 
     setTimeout(main, 5);
   }
+
   </script>
 
 </head>
@@ -156,6 +184,7 @@ var ID_SATURN = 3;
     </svg>
   </div>
 
+  <h3><span id="take">Take</span></h3>
   <div><span id="eYear"></span> 地球年</div>
 
 </body>
