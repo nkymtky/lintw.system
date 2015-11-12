@@ -26,17 +26,17 @@
     {
       name: "Lintw",
       m: MEarth * 0.88,
-      color: "green",
+      color: "blue",
     },
     {
       name: "Jupiter",
       m: MEarth * 210,
-      color: "black",
+      color: "orange",
     },
     {
       name: "Saturn",
       m: MEarth * 130,
-      color: "black",
+      color: "brown",
     }
   ];
 
@@ -72,9 +72,15 @@
     init(bodies[ID_LINTW]  , (0.1100 + Math.random() * 0.03) * AU, (Math.random() * 2) * Math.PI);
     init(bodies[ID_SATURN] , (0.1600 + Math.random() * 0.03) * AU, (Math.random() * 2) * Math.PI);
     take++;
-    console.log("*** Take " + take);
-    console.log(bodies);
+    mylog("*** Take " + take);
+    mylog(JSON.stringify(bodies));
     document.getElementById("take").innerHTML = "Take " + take;
+  }
+
+  function mylog(str) {
+    CR = String.fromCharCode(13);
+    document.getElementById("log").value =
+      document.getElementById("log").value + CR + str;
   }
 
   function main() {
@@ -115,12 +121,12 @@
         bodies[i].x += tick * bodies[i].vx;
         bodies[i].y += tick * bodies[i].vy;
 
-        if (Math.abs(bodies[i].x) > 2.0 * AU ||
-            Math.abs(bodies[i].y) > 2.0 * AU) {
+        if (Math.abs(bodies[i].x) > 1.5 * AU ||
+            Math.abs(bodies[i].y) > 1.5 * AU) {
           var canvas = document.getElementById('canvas');
           var ctx = canvas.getContext('2d');
           ctx.clearRect(0,0,600,600);
-          console.log("pastDays:" + pastDays);
+          mylog("pastEarthYears:" + Math.floor(pastDays / 365.25));
           initRoutine();
           setTimeout(main, 50);
           return;
@@ -178,14 +184,15 @@
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink">
       <circle id="b0" cx="0" cy="0" r="20" stroke="white" stroke-width="3" fill="red"/>
-      <circle id="b1" cx="0" cy="0" r="5" stroke="white" stroke-width="3" fill="green"/>
-      <circle id="b2" cx="0" cy="0" r="8" stroke="white" stroke-width="3" fill="black"/>
-      <circle id="b3" cx="0" cy="0" r="7" stroke="white" stroke-width="3" fill="black"/>
+      <circle id="b1" cx="0" cy="0" r="5" stroke="white" stroke-width="3" fill="blue"/>
+      <circle id="b2" cx="0" cy="0" r="8" stroke="white" stroke-width="3" fill="orange"/>
+      <circle id="b3" cx="0" cy="0" r="7" stroke="white" stroke-width="3" fill="brown"/>
     </svg>
   </div>
 
   <h3><span id="take">Take</span></h3>
   <div><span id="eYear"></span> 地球年</div>
+  <textarea id="log" rows="30" cols="240"></textarea>
 
 </body>
 </html>
