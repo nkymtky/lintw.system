@@ -20,7 +20,7 @@ var ID_SATURN = 3;
   var bodies = [
     {
       name: "Sel",
-      m: MSun * 0.42,
+      m: MSun * 0.33,
       ax: 0.0, ay: 0.0,
       vx: 0.0, vy: 0.0,
       x: 0.0, y: 0.0,
@@ -30,73 +30,41 @@ var ID_SATURN = 3;
     {
       name: "Lintw",
       m: MEarth * 0.88,
-      ax: 0.0,
-      ay: -G * MSun * 0.42 / (AU * 0.4 * AU * 0.4),
-      vx: Math.sqrt(G * MSun * 0.42 / (AU * 0.4)), // 第一宇宙速度
-      vy: 0.0,
-      x: 0.0, y: AU * 0.4,
-      xo: 0.0, yo: 0.0,
       color: "green",
     },
     {
       name: "Jupiter",
       m: MEarth * 210,
-      ax: 0.0,
-      ay: -G * MSun * 0.42 / (AU * 0.3 * AU * 0.3),
-      vx: -Math.sqrt(G * MSun * 0.42 / (AU * 0.3)), // 第一宇宙速度
-      vy: 0.0,
-      x: 0.0, y: -AU * 0.3,
-      xo: 0.0, yo: 0.0,
       color: "black",
     },
     {
       name: "Saturn",
       m: MEarth * 130,
-      ax: 0.0,
-      ay: -G * MSun * 0.42 / (AU * 0.5 * AU * 0.5),
-      vx: -Math.sqrt(G * MSun * 0.42 / (AU * 0.5)), // 第一宇宙速度
-      vy: 0.0,
-      x: 0.0, y: -AU * 0.5,
-      xo: 0.0, yo: 0.0,
       color: "black",
     }
   ];
 
-/*
-var bodies = [
-  {
-    name: "Sun",
-    m: MSun,
-    ax: 0.0, ay: 0.0,
-    vx: 0.0, vy: 0.0,
-    x: 0.0, y: 0.0,
-    xo: 0.0, yo: 0.0,
-    color: "red"
-  },
-  {
-    name: "Earth",
-    m: MEarth,
-    ax: 0.0,
-    ay: -G * MSun / (AU * AU),
-    vx: 3.0e4,
-    vy: 0.0,
-    x: 0.0, y: AU,
-    xo: 0.0, yo: 0.0,
-    color: "black"
-  }
-];
-*/
+  var pastDays = 0;
 
-console.log(bodies);
+  function init(body, r, rad) {
+    body.ax = -Math.cos(rad) * G * bodies[ID_SEL].m / (r * r);
+    body.ay = -Math.sin(rad) * G * bodies[ID_SEL].m / (r * r);
+    body.vx = -Math.sin(rad) * Math.sqrt(G * bodies[ID_SEL].m / r);
+    body.vy = Math.cos(rad) * Math.sqrt(G * bodies[ID_SEL].m / r);
+    body.ox = body.x = Math.cos(rad) * r;
+    body.oy = body.y = Math.sin(rad) * r;
+  }
+
+  init(bodies[ID_JUPITER], 0.0693 * AU, 0.0 * Math.PI);
+  init(bodies[ID_LINTW]  , 0.1100 * AU, 2.0 * Math.PI);
+  init(bodies[ID_SATURN] , 0.1746 * AU, 2.0 * Math.PI);
 
   setTimeout(main, 10);
 
-  var pastDays = 0;
-
   function main() {
 
-    var D = 2;
-    var tick = 60 * 60 * 24; // 1日を秒で
+    var D = 1;
+    var tick = 60 * 60 * 12; // 1日を秒で
 
     // 速度を座標に加算する
     for(var i = 0; i < bodies.length; i++) {
@@ -136,8 +104,8 @@ console.log(bodies);
     pastDays += D;
     document.getElementById('eYear').innerHTML = Math.floor(pastDays / 365.25) + "";
 
-    function getU(x) { return 600.0 * ( x) / (2 * AU) + 300; }
-    function getV(y) { return 600.0 * (-y) / (2 * AU) + 300; }
+    function getU(x) { return 600.0 * ( x) / (0.5 * AU) + 300; }
+    function getV(y) { return 600.0 * (-y) / (0.5 * AU) + 300; }
 
     // 軌跡を描画する
     var canvas = document.getElementById('canvas');
@@ -192,3 +160,28 @@ console.log(bodies);
 
 </body>
 </html>
+
+<!--
+var bodies = [
+  {
+    name: "Sun",
+    m: MSun,
+    ax: 0.0, ay: 0.0,
+    vx: 0.0, vy: 0.0,
+    x: 0.0, y: 0.0,
+    xo: 0.0, yo: 0.0,
+    color: "red"
+  },
+  {
+    name: "Earth",
+    m: MEarth,
+    ax: 0.0,
+    ay: -G * MSun / (AU * AU),
+    vx: 3.0e4,
+    vy: 0.0,
+    x: 0.0, y: AU,
+    xo: 0.0, yo: 0.0,
+    color: "black"
+  }
+];
+-->
