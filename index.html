@@ -17,6 +17,7 @@
   var ID_LINTW = 1;
   var ID_JUPITER = 2;
   var ID_SATURN = 3;
+  var ID_URANUS = 4;
 
   var bodies = [
     {
@@ -25,19 +26,21 @@
     },
     {
       name: "Lintw",
-      m: MEarth * 0.88,
       color: "blue",
     },
     {
       name: "Jupiter",
-      m: MEarth * 210,
       color: "orange",
     },
     {
       name: "Saturn",
-      m: MEarth * 130,
       color: "brown",
-    }
+    },
+    /*{
+      name: "uranus",
+      m: MEarth * 24,
+      color: "cyan",
+    }*/
   ];
 
   var take = 0;
@@ -48,7 +51,8 @@
     setTimeout(main, 10);
   };
 
-  function init(body, r, rad) {
+  function init(body, m, r, rad) {
+    body.m = m;
     body.ax = -Math.cos(rad) * G * bodies[ID_SEL].m / (r * r);
     body.ay = -Math.sin(rad) * G * bodies[ID_SEL].m / (r * r);
     body.vx = -Math.sin(rad) * Math.sqrt(G * bodies[ID_SEL].m / r);
@@ -68,9 +72,10 @@
       xo: 0.0, yo: 0.0,
       color: "red",
     };
-    init(bodies[ID_JUPITER], (0.0600 + Math.random() * 0.03) * AU, (Math.random() * 2) * Math.PI);
-    init(bodies[ID_LINTW]  , (0.1100 + Math.random() * 0.03) * AU, (Math.random() * 2) * Math.PI);
-    init(bodies[ID_SATURN] , (0.1600 + Math.random() * 0.03) * AU, (Math.random() * 2) * Math.PI);
+    init(bodies[ID_JUPITER], MEarth * (  312 + Math.random() * 0.00), (0.0480 + Math.random() * 0.00) * AU, 0.0 * Math.PI);
+    init(bodies[ID_LINTW]  , MEarth * ( 0.88 + Math.random() * 0.00), (0.0796 + Math.random() * 0.00) * AU, 1.5 * Math.PI);
+    init(bodies[ID_SATURN] , MEarth * (  238 + Math.random() * 0.00), (0.1195 + Math.random() * 0.00) * AU, 1.0 * Math.PI);
+    // init(bodies[ID_URANUS] , (0.0437 + Math.random() * 0.01) * AU, (Math.random() * 2) * Math.PI);
     take++;
     mylog("*** Take " + take);
     mylog(JSON.stringify(bodies));
@@ -85,8 +90,8 @@
 
   function main() {
 
-    var D = 10;
-    var tick = 60 * 60 * 12; // 1日を秒で
+    var D = 15;
+    var tick = 60 * 60; // 1hを秒で
 
     // 速度を座標に加算する
     for(var i = 0; i < bodies.length; i++) {
@@ -121,8 +126,7 @@
         bodies[i].x += tick * bodies[i].vx;
         bodies[i].y += tick * bodies[i].vy;
 
-        if (Math.abs(bodies[i].x) > 1.5 * AU ||
-            Math.abs(bodies[i].y) > 1.5 * AU) {
+        if (Math.sqrt(bodies[i].x * bodies[i].x + bodies[i].y * bodies[i].y) > 0.5 * AU) {
           var canvas = document.getElementById('canvas');
           var ctx = canvas.getContext('2d');
           ctx.clearRect(0,0,600,600);
@@ -198,6 +202,7 @@
       <circle id="b1" cx="0" cy="0" r="5" stroke="white" stroke-width="3" fill="blue"/>
       <circle id="b2" cx="0" cy="0" r="8" stroke="white" stroke-width="3" fill="orange"/>
       <circle id="b3" cx="0" cy="0" r="7" stroke="white" stroke-width="3" fill="brown"/>
+      <!-- <circle id="b4" cx="0" cy="0" r="6" stroke="white" stroke-width="3" fill="cyan"/> -->
     </svg>
   </div>
 
